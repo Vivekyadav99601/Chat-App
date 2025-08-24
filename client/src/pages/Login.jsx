@@ -1,28 +1,105 @@
 import React from "react";
+import { Link } from "react-router-dom";
+import { FcGoogle } from "react-icons/fc";
+import { useState } from "react";
 
-const Login = ()=>{
-    return ( 
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100vh", background: "linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%)" }}>
-            <div className="card shadow-lg p-4 border-0" style={{ maxWidth: "400px", width: "100%", borderRadius: "24px", background: "rgba(255,255,255,0.95)" }}>
-                <h2 className="text-center mb-4 text-primary fw-bold" style={{ letterSpacing: "1px" }}>Welcome Back</h2>
-                <form>
-                    <div className="mb-3">
-                        <label htmlFor="email" className="form-label text-primary fw-semibold">Email address</label>
-                        <input type="email" className="form-control border-2 border-primary rounded-pill px-3 py-2" id="email" placeholder="Enter email" autoComplete="username" />
-                    </div>
-                    <div className="mb-3">
-                        <label htmlFor="password" className="form-label text-primary fw-semibold">Password</label>
-                        <input type="password" className="form-control border-2 border-primary rounded-pill px-3 py-2" id="password" placeholder="Password" autoComplete="current-password" />
-                    </div>
-                    <button type="submit" className="btn btn-primary w-100 fw-bold mt-3 rounded-pill py-2" style={{ fontSize: "1.1rem", boxShadow: "0 4px 12px rgba(0,123,255,0.15)" }}>
-                        Login
-                    </button>
-                    <div className="mt-3 text-center">
-                        <a href="#" className="text-primary text-decoration-none fw-semibold">Forgot password?</a>
-                    </div>
-                </form>
-            </div>
-        </div>
-    )
-}
+const Login = () => {
+
+  const [loginData, setLoginData] = useState({
+  email: "",
+  password: "",
+});
+const handleChange = (e) => {
+  const { name, value } = e.target;
+  setLoginData((previousData) => ({
+    ...previousData,
+    [name]: value,
+  }));
+};
+const handleSubmit = (e) => {
+  e.preventDefault();
+
+  console.log("Form Submitted:", loginData);
+  setLoginData({
+    email: "",
+    password: "",
+  });
+};
+
+ 
+  return (
+    <>
+    <div className="flex justify-center items-center min-h-screen bg-base-200">
+      <div className="w-full max-w-md bg-base-100 p-8 rounded-2xl shadow-md border border-base-300">
+       
+        <h2 className="text-2xl font-bold text-center text-primary mb-6">
+          Login to JobFinder
+        </h2>
+
+       
+        <form className="flex flex-col gap-4"onSubmit={handleSubmit}>
+          <div className="form-control">
+            <label htmlFor="email" className="label font-medium text-base-content">
+              Email
+            </label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              placeholder="Enter your email"
+              className="input input-bordered w-full"
+              required
+              value={loginData.email}
+              onChange={handleChange}
+            />
+          </div>
+
+          <div className="form-control">
+            <label htmlFor="password" className="label font-medium text-base-content">
+              Password
+            </label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              placeholder="Enter your password"
+              className="input input-bordered w-full"
+              required
+              value={loginData.password}
+              onChange={handleChange}
+            />
+          </div>
+
+          <button
+          type="submit"
+          className="btn btn-primary w-full mt-2 text-primary-content">
+            Login
+          </button>
+        </form>
+
+       
+        <div className="divider my-4">OR</div>
+
+        {/* Google Login */}
+        <button className="btn btn-outline w-full flex items-center justify-center gap-2">
+          <FcGoogle size={20} />
+          Continue with Google
+        </button>
+
+        {/* Register Link */}
+        <p className="text-center mt-4 text-base-content">
+          Don’t have an account?{" "}
+          <Link
+            to="/signUp"
+            className="text-primary font-medium hover:underline"
+          >
+            Register here
+          </Link>
+        </p>
+      </div>
+    </div>
+    </>
+  );
+};
+
 export default Login;

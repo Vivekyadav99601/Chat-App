@@ -7,7 +7,7 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Logout from "./pages/Logout";
 import Services from "./pages/Services";
-import Signup from "./pages/Signup";
+import Register from "./pages/Signup";
 
 
 const App = ()=>{
@@ -23,7 +23,7 @@ const App = ()=>{
     <Route path="/login" element={<Login/>} />
     <Route path="/logout" element={<Logout/>} />
     <Route path="/services" element={<Services/>} />
-    <Route path="/Signup" element={<Signup/>} />
+    <Route path="/signup" element={<Register/>} />
 
     </Routes>
     

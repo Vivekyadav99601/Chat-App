@@ -7,7 +7,7 @@ const connectDB = async()=>{
         console.log("Mongoose connected",conn.connection.host);
         
     }catch(error){
-     console.log("Error connectiog DB",error);
+     console.log("Error connectiog DB",error.message);
      process.exit(1);
      
     }
