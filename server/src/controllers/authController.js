@@ -2,6 +2,7 @@ import User from "../modals/userModel.js"
 import OTP from "../modals/otpModel.js"
 import bcrypt from "bcrypt";
 import sendEmail from "../utils/sendEmail.js";
+import gentoken from "../utils/auth.js";
 
 const genDummyImage = (fullName) =>{
     const r = Math.floor(Math.random()*56)+200;
@@ -20,7 +21,7 @@ export const Register =async (req,res,next)=>{
 
         const fetchOtp = await OTP.findOne({email});
         if(fetchOtp){
-            const isOtpValid = await bcrypt.compare(otp,FileSystemDirectoryHandle.otp);
+            const isOtpValid = await bcrypt.compare(otp.toString(),FileSystemDirectoryHandle.otp);
           
             if(!isOtpValid){
                 const error = new Error("INvalid OTP");
@@ -56,6 +57,55 @@ export const Register =async (req,res,next)=>{
 
 }
 export const Login = async (req,res,next)=>{
+    try{
+        const {email , password, otp } = req.body;
+        if(!email || !password || !otp) {
+            const error = new Error ("please fill alll fields ");
+            error.statusCode= 400;
+            return next(error);
+        }
+        const existingUser  = await User.findOne({email});
+
+        if(!existingUser){
+            const error = new Error ("User not found");
+            error.statusCode= 404;
+            return next(error);
+        }
+
+        const isVerified = await bcrypt.compare(password,existingUser.password);
+
+        if(!isVerified){
+            const error = new Error ("Invalid crediantials");
+            error.statusCode= 401;
+            return next(error);
+        }
+
+      if(otp != "N/A" && existingUser.TwoFactorAuth === "true"){
+        const fetchOtp = await OTP.findOne({email});
+        if(!fetchOtp){
+            const error = new Error ("OTP not found");
+            error.statusCode= 404;
+            return next(error);
+        }
+        const isOtpValid = await bcrypt.compare(otp.toString(),fetchOtp.otp);
+
+        if(!isOtpValid)
+        {
+             const error = new Error ("INvalid otp ");
+            error.statusCode= 401;
+            return next(error);
+        }
+        await OTP,deleteOne({email});
+      };
+     
+      gentoken(existingUser,res);
+      res.staus(200).json({message:"Login Successfull",
+        user:existingUser,
+      })
+
+    }catch(error){
+        return next(error);
+    }
     
 }
 export const GoggleLogin = ()=>{
@@ -115,6 +165,77 @@ export const SendOTPRegister =async (req,res,next)=>{
         next(error);
     };
 };
-export const SendOTPLogin = ()=>{
+export const SendOTPLogin =async (req,res,next)=>{
+     try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      const error = new Error("Please fill all the fields");
+      error.statusCode = 400;
+      return next(error);
+    }
+
+    const existingUser = await User.findOne(email);
+    if (!existingUser) {
+      const error = new Error("User not found");
+      error.statusCode = 404;
+      return next(error);
+    }
+
+    const isVerified = await bcrypt.compare(password, existingUser.password);
+    if (!isVerified) {
+      const error = new Error("Invalid credentials");
+      error.statusCode = 401;
+      return next(error);
+    }
+
+    if (existingUser.TwoFactorAuth === "false") {
+      req.body.otp = "N/A";
+      if (existingUser.type === "normalUser") {
+        return Login(req, res, next);
+      }
+      else
+        return GoogleLogin(req, res, next);
+    }
+
+    const otp = Math.floor(100000 + Math.random() * 900000);
+    const hashedOtp = await bcrypt.hash(otp.toString(), 10);
+    await OTP.create({
+      email,
+      otp: hashedOtp,
+    });
+
+    const subject = "2-Step verification code";
+
+    const message = `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9; border-radius: 10px;">
+                <div style="text-align: center; padding: 20px 0;">
+                    <h2 style="color: #333;">ChatApp Pvt. Ltd.</h2>
+                    <h1 style="color: #333; margin-bottom: 20px;">2-Step Verification Code</h1>
+                    <div style="background-color: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                        <p style="font-size: 16px; color: #666; margin-bottom: 20px;">
+                            Your verification code is:
+                        </p>
+                        <h2 style="font-size: 32px; color: #4CAF50; letter-spacing: 5px; margin: 20px 0;">
+                            ${otp}
+                        </h2>
+                        <p style="font-size: 14px; color: #999; margin-top: 20px;">
+                            This code will expire in 10 minutes. Please do not share this code with anyone.
+                        </p>
+                    </div>
+                    <p style="font-size: 14px; color: #666; margin-top: 20px;">
+                        If you didn't request this code, please ignore this email.
+                    </p>
+                </div>
+            </div>
+        `;
+
+    sendEmail(email, subject, message);
+    res.status(200).json({
+      message: "OTP sent successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
     
 }

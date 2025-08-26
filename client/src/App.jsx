@@ -8,6 +8,7 @@ import Login from "./pages/Login";
 import Logout from "./pages/Logout";
 import Services from "./pages/Services";
 import Register from "./pages/Signup";
+import Chats from "./pages/chats";
 
 
 const App = ()=>{
@@ -24,6 +25,7 @@ const App = ()=>{
     <Route path="/logout" element={<Logout/>} />
     <Route path="/services" element={<Services/>} />
     <Route path="/signup" element={<Register/>} />
+    <Route path="/chats" element={<Chats/>} />
 
     </Routes>
     

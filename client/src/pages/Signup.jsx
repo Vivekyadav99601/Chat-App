@@ -25,7 +25,7 @@ const Register = () => {
     e.preventDefault();
     setLoading(true);
 
-    // 🚨 simple password match check
+   
     if (registerData.password !== registerData.confirmPassword) {
       alert("Passwords do not match!");
       setLoading(false);
@@ -34,7 +34,7 @@ const Register = () => {
 
     console.log("Register Data:", registerData);
 
-    // Simulate API call
+  
     setTimeout(() => {
       setLoading(false);
       setRegisterData({

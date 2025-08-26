@@ -21,6 +21,7 @@ const Navbar = ()=>{
                 <Link to={"/about"} >About</Link>
                 <Link to={"/contact"} >Contact</Link>
                 <Link to={"/services"} >Services</Link>
+                <Link to={"/chats"} >Chats</Link>
                 <Link to={"/login"} >Login</Link>
                 <select 
                 className="select select-bordered w-full border-secondary bg-base-100
