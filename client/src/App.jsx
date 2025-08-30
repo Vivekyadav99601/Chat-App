@@ -9,12 +9,16 @@ import Logout from "./pages/Logout";
 import Services from "./pages/Services";
 import Register from "./pages/Signup";
 import Chats from "./pages/chats";
+import ChatPage from "./pages/ChatPage";
+import Dashboard from "./pages/Dahboard";
+import {Toaster} from "react-hot-toast";
 
 
 const App = ()=>{
   return(
     <>
     <BrowserRouter>
+    <Toaster/>
     <Navbar />
     <Routes>
 
@@ -26,6 +30,8 @@ const App = ()=>{
     <Route path="/services" element={<Services/>} />
     <Route path="/signup" element={<Register/>} />
     <Route path="/chats" element={<Chats/>} />
+    <Route path="/chatPage" element={<ChatPage/>} />
+    <Route path="/dashboard" element={<Dashboard/>} />
 
     </Routes>
     

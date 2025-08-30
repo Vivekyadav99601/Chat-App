@@ -1,6 +1,11 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
+import { FaEnvelope, FaLock , FaUser } from "react-icons/fa";
+import toast from "react-hot-toast";
+import api from "../config/Api";
+import OTPModel from "../components/modals/OTPmodel";
+
 
 const Register = () => {
   const [registerData, setRegisterData] = useState({
@@ -9,157 +14,192 @@ const Register = () => {
     password: "",
     confirmPassword: "",
   });
-
-  const [loading, setLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
+  const [isOTPModelOpen,setIsOTPModelOpen] =useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setRegisterData((prevData) => ({
+    setRegisterData({
       ...prevData,
       [name]: value,
-    }));
+    });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit =async (e) => {
     e.preventDefault();
     setLoading(true);
+    
 
    
     if (registerData.password !== registerData.confirmPassword) {
       alert("Passwords do not match!");
-      setLoading(false);
+     
       return;
     }
 
-    console.log("Register Data:", registerData);
+    console.log("Register form  Subbmited :", registerData);
 
-  
-    setTimeout(() => {
-      setLoading(false);
-      setRegisterData({
-        name: "",
-        email: "",
-        password: "",
-        confirmPassword: "",
-      });
-    }, 1500);
+   try {
+      const res = await api.post("/auth/sendOtpRegister", registerData);
+      toast.success(res.data.message);
+      setIsOTPModalOpen(true);
+    } catch (error) {
+      console.error("Error during registration:", error);
+      toast.error("Registration failed");
+    }
+    
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-base-200">
-      <div className="w-full max-w-md bg-base-100 p-8 rounded-2xl shadow-md border border-base-300">
-        <h2 className="text-2xl font-bold text-center text-primary mb-6">
-          Create an Account
-        </h2>
-
-        {/* Register Form */}
-        <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-          <div className="form-control">
-            <label htmlFor="name" className="label font-medium text-base-content">
-              Full Name
-            </label>
-            <input
-              id="name"
-              name="name"
-              type="text"
-              placeholder="Enter your full name"
-              className="input input-bordered w-full"
-              required
-              value={registerData.name}
-              onChange={handleChange}
-            />
+    <>
+    <div className="flex justify-center items-center min-h-[calc(100vh-64px)]">
+        <div className="w-full max-w-md p-8 space-y-4 bg-base-200 rounded-lg shadow-lg">
+          <div className="text-center">
+            <h1 className="text-3xl font-bold">Create Account</h1>
+            <p className="mt-2 text-base-content/70">Sign up to get started</p>
           </div>
 
-          <div className="form-control">
-            <label htmlFor="email" className="label font-medium text-base-content">
-              Email
-            </label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              placeholder="Enter your email"
-              className="input input-bordered w-full"
-              required
-              value={registerData.email}
-              onChange={handleChange}
-            />
+          <form className="mt-8 space-y-4" onSubmit={handleSubmit}>
+            <div className="space-y-2">
+              <div>
+                <label
+                  htmlFor="fullName"
+                  className="block text-sm font-medium text-base-content"
+                >
+                  Full Name
+                </label>
+                <div className="mt-1 relative ">
+                  <div className="absolute z-10 inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <FaUser className="text-base-content/50" />
+                  </div>
+                  <input
+                    id="fullName"
+                    name="fullName"
+                    type="text"
+                    required
+                    className="input ps-10"
+                    placeholder="John Doe"
+                    value={registerData.fullName}
+                    onChange={handleChange}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium text-base-content"
+                >
+                  Email
+                </label>
+                <div className="mt-1 relative">
+                  <div className="absolute z-10 inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <FaEnvelope className="text-base-content/50" />
+                  </div>
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    required
+                    className="input ps-10"
+                    placeholder="you@example.com"
+                    value={registerData.email}
+                    onChange={handleChange}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label
+                  htmlFor="password"
+                  className="block text-sm font-medium text-base-content"
+                >
+                  Password
+                </label>
+                <div className="mt-1 relative ">
+                  <div className="absolute z-10 inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <FaLock className="text-base-content/50" />
+                  </div>
+                  <input
+                    id="password"
+                    name="password"
+                    type="password"
+                    required
+                    className="input ps-10"
+                    placeholder="••••••••"
+                    value={registerData.password}
+                    onChange={handleChange}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label
+                  htmlFor="confirmPassword"
+                  className="block text-sm font-medium text-base-content"
+                >
+                  Confirm Password
+                </label>
+                <div className="mt-1 relative ">
+                  <div className="absolute z-10 inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <FaLock className="text-base-content/50" />
+                  </div>
+                  <input
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    type="password"
+                    required
+                    className="input ps-10"
+                    placeholder="••••••••"
+                    value={registerData.confirmPassword}
+                    onChange={handleChange}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center">
+              <input
+                id="remember-me"
+                name="remember-me"
+                type="checkbox"
+                className="h-4 w-4 text-primary focus:ring-primary border-base-300 rounded"
+              />
+              <label
+                htmlFor="remember-me"
+                className="ml-2 block text-sm text-base-content"
+              >
+                I Agree All Terms and Conditions
+              </label>
+            </div>
+
+            <div>
+              <button type="submit" className="btn btn-primary w-full">
+                Create Account
+              </button>
+            </div>
+          </form>
+
+          <div className="text-center mt-2">
+            <p className="text-sm text-base-content/70">
+              Already have an account?{" "}
+              <Link
+                to="/login"
+                className="font-medium text-primary hover:text-primary/80"
+              >
+                Sign in
+              </Link>
+            </p>
           </div>
-
-          {/* Password */}
-          <div className="form-control relative">
-            <label
-              htmlFor="password"
-              className="label font-medium text-base-content"
-            >
-              Password
-            </label>
-            <input
-              id="password"
-              name="password"
-              type={showPassword ? "text" : "password"}
-              placeholder="Enter your password"
-              className="input input-bordered w-full pr-10"
-              required
-              value={registerData.password}
-              onChange={handleChange}
-            />
-          </div>
-
-          {/* Confirm Password */}
-          <div className="form-control relative">
-            <label
-              htmlFor="confirmPassword"
-              className="label font-medium text-base-content"
-            >
-              Confirm Password
-            </label>
-            <input
-              id="confirmPassword"
-              name="confirmPassword"
-              type={showPassword ? "text" : "password"}
-              placeholder="Re-enter your password"
-              className="input input-bordered w-full pr-10"
-              required
-              value={registerData.confirmPassword}
-              onChange={handleChange}
-            />
-            <span
-              className="absolute right-3 top-12 text-sm cursor-pointer text-primary"
-              onClick={() => setShowPassword(!showPassword)}
-            >
-              {showPassword ? "Hide" : "Show"}
-            </span>
-          </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="btn btn-primary w-full mt-2 text-primary-content"
-          >
-            {loading ? "Signing up..." : "Sign Up"}
-          </button>
-        </form>
-
-        {/* Divider */}
-        <div className="divider my-4">OR</div>
-
-        {/* Google Sign Up */}
-        <button className="btn btn-outline w-full flex items-center justify-center gap-2">
-          <FcGoogle size={20} />
-          Sign Up with Google
-        </button>
-
-        {/* Login Link */}
-        <p className="text-center mt-4 text-base-content">
-          Already have an account?{" "}
-          <Link to="/login" className="text-primary font-medium hover:underline">
-            Login here
-          </Link>
-        </p>
+        </div>
       </div>
-    </div>
+
+      <OTPModel
+        isOpen={isOTPModalOpen}
+        onClose={() => setIsOTPModalOpen(false)}
+        callingPage="register"
+        data={registerData}
+      />
+    </>
   );
 };
 

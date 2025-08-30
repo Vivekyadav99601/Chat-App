@@ -195,7 +195,7 @@ export const SendOTPLogin =async (req,res,next)=>{
         return Login(req, res, next);
       }
       else
-        return GoogleLogin(req, res, next);
+        return GoggleLogin(req, res, next);
     }
 
     const otp = Math.floor(100000 + Math.random() * 900000);

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 const Navbar = ()=>{
 
@@ -7,14 +7,25 @@ const Navbar = ()=>{
         sessionStorage.getItem("theme") ||"light"
     );
 
+    const location = useLocation().pathname.slice(1);
+    console.log(location);
+
     useEffect(()=>{
       document.documentElement.setAttribute("data-theme" ,selectedTheme);
       sessionStorage.setItem("theme",selectedTheme);
     },[selectedTheme]);
+
+
+    useEffect(()=>{
+        if(location === "chats"){
+            window.scrollTo({top:64,behavior:"smooth"});
+        }
+    },[location]);
+
     return(
         <>
-        <div className="container-fluid flex justify-between bg-primary 
-        text-primary-content p-3 ">
+        <div className={`${location !== "chats"?"sticky top-0 z-50" : ""}"container-fluid flex justify-between  bg-primary 
+        text-primary-content p-3 "`}>
             <h1 className="text-3xl font-bold space-x-1.5">Chat App</h1>
             <div className="flex gap-7  items-center">
                 <Link to={"/home"} >Home</Link>
@@ -50,6 +61,7 @@ const Navbar = ()=>{
               <option value="valorent">Valorent</option>
               <option value="vscode">VS Code</option>
                 </select>
+                
             </div>
         </div>
         </>
